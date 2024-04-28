@@ -1,5 +1,12 @@
+# Useless OS files
 .DS_Store
 Thumbs.db
+
+# build/deps folders
 build/
 dist/
+vcpkg_installed/
+
+# executables
 main
+aceboy
