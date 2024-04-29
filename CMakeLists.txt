@@ -15,9 +15,17 @@ set(SOURCE_FILES
 )
 
 find_package(spdlog CONFIG REQUIRED)
+find_package(argparse CONFIG REQUIRED)
+find_package(magic_enum CONFIG REQUIRED)
+find_package(imgui CONFIG REQUIRED)
+find_package(raylib CONFIG REQUIRED)
 
 add_executable(${EXE_NAME} ${SOURCE_FILES})
 
 target_link_libraries(${EXE_NAME} PRIVATE
     spdlog::spdlog
+    argparse::argparse
+    magic_enum::magic_enum
+    imgui::imgui
+    raylib
 )

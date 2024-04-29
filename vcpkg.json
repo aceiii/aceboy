@@ -1,5 +1,10 @@
 {
     "dependencies": [
-        "spdlog"
+        "spdlog",
+        "argparse",
+        "magic-enum",
+        "raylib",
+        "imgui",
+        "tomlplusplus"
     ]
 }
