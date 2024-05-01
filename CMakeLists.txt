@@ -12,6 +12,7 @@ add_compile_definitions(TOML_EXCEPTIONS=0)
 
 set(SOURCE_FILES
     src/main.cpp
+    src/interface.cpp
 )
 
 find_package(spdlog CONFIG REQUIRED)

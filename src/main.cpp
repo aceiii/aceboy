@@ -1,3 +1,5 @@
+#include "interface.h"
+
 #include <argparse/argparse.hpp>
 #include <magic_enum.hpp>
 #include <spdlog/spdlog.h>
@@ -38,6 +40,9 @@ auto main(int argc, char *argv[]) -> int {
     std::cerr << program;
     return 1;
   }
+
+  Interface interface;
+  interface.run();
 
   spdlog::info("Exiting.");
 
