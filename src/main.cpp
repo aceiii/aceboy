@@ -1,4 +1,5 @@
 #include "interface.h"
+#include "registers.h"
 
 #include <argparse/argparse.hpp>
 #include <magic_enum.hpp>
@@ -40,6 +41,12 @@ auto main(int argc, char *argv[]) -> int {
     std::cerr << program;
     return 1;
   }
+
+  Registers regs;
+  regs.af = 23434;
+  spdlog::info("af: {}", regs.af);
+  spdlog::info("a: {}", regs.a());
+  spdlog::info("f: {}", regs.f());
 
   Interface interface;
   interface.run();
