@@ -58,4 +58,20 @@ struct Registers {
   inline uint16_t l() const {
     return low(hl);
   }
+
+  inline uint16_t flag_c() const {
+    return (af >> 4) & 1;
+  }
+
+  inline uint16_t flag_h() const {
+    return (af >> 5) & 1;
+  }
+
+  inline uint16_t flag_n() const {
+    return (af >> 6) & 1;
+  }
+
+  inline uint16_t flag_z() const {
+    return (af >> 7) & 1;
+  }
 };
