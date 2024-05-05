@@ -3,12 +3,12 @@
 #include <cstdint>
 
 struct Registers {
-  uint16_t af;
-  uint16_t bc;
-  uint16_t de;
-  uint16_t hl;
-  uint16_t pc;
-  uint16_t sp;
+  uint16_t af = 0;
+  uint16_t bc = 0;
+  uint16_t de = 0;
+  uint16_t hl = 0;
+  uint16_t pc = 0;
+  uint16_t sp = 0;
 
   inline void reset() {
     af = 0;
