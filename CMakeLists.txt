@@ -4,7 +4,7 @@ project(aceboy VERSION 0.0.1 LANGUAGES CXX)
 
 set(EXE_NAME aceboy)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -13,6 +13,8 @@ add_compile_definitions(TOML_EXCEPTIONS=0)
 set(SOURCE_FILES
     src/main.cpp
     src/interface.cpp
+    src/cpu.cpp
+    src/emulator.cpp
 )
 
 set(ARGPARSE_BUILD_TESTS OFF)

@@ -42,12 +42,6 @@ auto main(int argc, char *argv[]) -> int {
     return 1;
   }
 
-  Registers regs;
-  regs.af = 23434;
-  spdlog::info("af: {}", regs.af);
-  spdlog::info("a: {}", regs.a());
-  spdlog::info("f: {}", regs.f());
-
   Interface interface;
   interface.run();
 

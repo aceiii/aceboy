@@ -1,4 +1,5 @@
 #include "interface.h"
+#include "emulator.h"
 
 #include <raylib.h>
 #include <imgui.h>
@@ -10,6 +11,8 @@ namespace {
   const int kDefaulWindowWidth = 800;
   const int kDefaultWindowHeight = 600;
   const char* kWindowTitle = "AceBoy - GameBoy Emulator";
+
+  Emulator emulator;
 }
 
 Interface::Interface() {
