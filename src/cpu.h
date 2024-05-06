@@ -6,11 +6,11 @@
 
 class CPU {
 public:
-  CPU(Registers &regs);
-
   void execute();
   void run();
 
+  Registers* registers();
+
 public:
-  Registers &regs;
+  Registers regs;
 };

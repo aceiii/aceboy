@@ -5,8 +5,6 @@
 
 class Emulator {
 public:
-  Emulator();
-
   void initialize();
   void update();
   void cleanup();
@@ -20,8 +18,6 @@ public:
 
   bool is_playing() const;
 
-
 private:
-  Registers regs;
   CPU cpu;
 };
