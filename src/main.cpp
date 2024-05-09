@@ -48,18 +48,55 @@ auto main(int argc, char *argv[]) -> int {
   Registers regs;
   regs.reset();
 
-  regs.set8(kRegA, 0b110001);
-  regs.flags.set(kFlagZ, 0);
-  regs.flags.set(kFlagN, 1);
+  regs.set8(kRegA, 1);
+  regs.set8(kRegF, 0b10001111);
+  regs.set8(kRegB, 3);
+  regs.set8(kRegC, 4);
+  regs.set8(kRegD, 5);
+  regs.set8(kRegE, 6);
+  regs.set8(kRegH, 7);
+  regs.set8(kRegL, 8);
+  regs.sp = 123;
+  regs.pc = 45678;
+
+  regs.flags.set(kFlagZ, 1);
+  regs.flags.set(kFlagN, 0);
   regs.flags.set(kFlagH, 1);
-  regs.flags.set(kFlagC, 1);
+  regs.flags.set(kFlagC, 0);
 
   spdlog::info("flag z: {}", regs.flags.get(kFlagZ));
   spdlog::info("flag n: {}", regs.flags.get(kFlagN));
   spdlog::info("flag h: {}", regs.flags.get(kFlagH));
   spdlog::info("flag c: {}", regs.flags.get(kFlagC));
-  spdlog::info("af: {:016b}", regs.get16(kRegAF));
-  spdlog::info("af: {:08b}|{:08b}", regs.get8(kRegA), regs.get8(kRegF));
+
+  spdlog::info("a: {:08b} = {}", regs.get8(kRegA), regs.get8(kRegA));
+  spdlog::info("f: {:08b} = {}", regs.get8(kRegF), regs.get8(kRegF));
+  spdlog::info("af: {:016b} = {}", regs.get16(kRegAF), regs.get16(kRegAF));
+
+  spdlog::info("b: {:08b} = {}", regs.get8(kRegB), regs.get8(kRegB));
+  spdlog::info("c: {:08b} = {}", regs.get8(kRegC), regs.get8(kRegC));
+  spdlog::info("bc: {:016b} = {}", regs.get16(kRegBC), regs.get16(kRegBC));
+
+  spdlog::info("d: {:08b} = {}", regs.get8(kRegD), regs.get8(kRegD));
+  spdlog::info("e: {:08b} = {}", regs.get8(kRegE), regs.get8(kRegE));
+  spdlog::info("de: {:016b} = {}", regs.get16(kRegDE), regs.get16(kRegDE));
+
+  spdlog::info("h: {:08b} = {}", regs.get8(kRegH), regs.get8(kRegH));
+  spdlog::info("l: {:08b} = {}", regs.get8(kRegL), regs.get8(kRegL));
+  spdlog::info("hl: {:016b} = {}", regs.get16(kRegHL), regs.get16(kRegHL));
+
+  spdlog::info("sp: {:08b} = {}", regs.sp, regs.sp);
+  spdlog::info("pc: {:08b} = {}", regs.pc, regs.pc);
+
+  regs.set16(kRegAF, 4567);
+  regs.set16(kRegBC, 6678);
+  regs.set16(kRegDE, 1193);
+  regs.set16(kRegHL, 2356);
+
+  spdlog::info("af: {:016b} = {}", regs.get16(kRegAF), regs.get16(kRegAF));
+  spdlog::info("bc: {:016b} = {}", regs.get16(kRegBC), regs.get16(kRegBC));
+  spdlog::info("de: {:016b} = {}", regs.get16(kRegDE), regs.get16(kRegDE));
+  spdlog::info("hl: {:016b} = {}", regs.get16(kRegHL), regs.get16(kRegHL));
 
   spdlog::info("Exiting.");
 

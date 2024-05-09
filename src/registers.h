@@ -24,11 +24,10 @@ enum Register8 {
 
 enum Register16 {
   kRegAF = 0,
-  kRegBC,
-  kRegDE,
-  kRegHL,
+  kRegBC = 2,
+  kRegDE = 4,
+  kRegHL = 6,
 };
-
 
 struct Flags {
   uint8_t &val;
@@ -44,15 +43,17 @@ struct Flags {
 
 struct Registers {
   std::array<uint8_t, kRegCount> vals;
+  uint16_t pc;
+  uint16_t sp;
 
-  Flags flags { vals[kRegF] };
+  Flags flags = { vals[kRegF] };
 
   inline uint8_t get8(Register8 reg) const {
     return vals[reg];
   }
 
   inline void set8(Register8 reg, uint8_t val) {
-    vals[reg] = val;
+    vals[reg] = val & (reg == kRegF ? 0xf0 : 0xff);
   }
 
   inline uint16_t get16(Register16 reg) const {
@@ -61,7 +62,7 @@ struct Registers {
 
   inline void set16(Register16 reg, uint16_t val) {
     vals[reg] = val >> 8;
-    vals[reg + 1] = val & 0xff;
+    vals[reg + 1] = val & (reg == kRegAF ? 0xf0 : 0xff);
   }
 
   inline void reset() {

@@ -6,6 +6,8 @@
 
 struct State {
   bool ime;
+  bool halt;
+  bool hard_lock;
 };
 
 class CPU {
