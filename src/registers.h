@@ -1,77 +1,70 @@
 #pragma once
 
 #include <cstdint>
+#include <array>
+
+enum Flag {
+  kFlagC = 4,
+  kFlagH = 5,
+  kFlagN = 6,
+  kFlagZ = 7,
+};
+
+enum Register8 {
+  kRegA = 0,
+  kRegF,
+  kRegB,
+  kRegC,
+  kRegD,
+  kRegE,
+  kRegH,
+  kRegL,
+  kRegCount,
+};
+
+enum Register16 {
+  kRegAF = 0,
+  kRegBC,
+  kRegDE,
+  kRegHL,
+};
+
+
+struct Flags {
+  uint8_t &val;
+
+  inline uint8_t get(Flag flag) const {
+    return (val >> static_cast<int>(flag)) & 1;
+  }
+
+  inline void set(Flag flag, uint8_t bit) {
+    val = (val & ~(1 << static_cast<int>(flag))) | ((bit & 1) << static_cast<int>(flag));
+  }
+};
 
 struct Registers {
-  uint16_t af = 0;
-  uint16_t bc = 0;
-  uint16_t de = 0;
-  uint16_t hl = 0;
-  uint16_t pc = 0;
-  uint16_t sp = 0;
+  std::array<uint8_t, kRegCount> vals;
+
+  Flags flags { vals[kRegF] };
+
+  inline uint8_t get8(Register8 reg) const {
+    return vals[reg];
+  }
+
+  inline void set8(Register8 reg, uint8_t val) {
+    vals[reg] = val;
+  }
+
+  inline uint16_t get16(Register16 reg) const {
+    return (vals[reg] << 8) | vals[reg + 1];
+  }
+
+  inline void set16(Register16 reg, uint16_t val) {
+    vals[reg] = val >> 8;
+    vals[reg + 1] = val & 0xff;
+  }
 
   inline void reset() {
-    af = 0;
-    bc = 0;
-    de = 0;
-    hl = 0;
-    pc = 0;
-    sp = 0;
-  }
-
-  static inline uint16_t high(uint16_t val) {
-    return val >> 8;
-  }
-
-  static inline uint16_t low(uint16_t val) {
-    return val & 0xff;
-  }
-
-  inline uint16_t a() const {
-    return high(af);
-  }
-
-  inline uint16_t f() const {
-    return low(af);
-  }
-
-  inline uint16_t b() const {
-    return high(bc);
-  }
-
-  inline uint16_t c() const {
-    return low(bc);
-  }
-
-  inline uint16_t d() const {
-    return high(de);
-  }
-
-  inline uint16_t e() const {
-    return low(de);
-  }
-
-  inline uint16_t h() const {
-    return high(hl);
-  }
-
-  inline uint16_t l() const {
-    return low(hl);
-  }
-
-  inline uint16_t flag_c() const {
-    return (af >> 4) & 1;
-  }
-
-  inline uint16_t flag_h() const {
-    return (af >> 5) & 1;
-  }
-
-  inline uint16_t flag_n() const {
-    return (af >> 6) & 1;
-  }
-
-  inline uint16_t flag_z() const {
-    return (af >> 7) & 1;
+    vals.fill(0);
   }
 };

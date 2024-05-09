@@ -42,8 +42,24 @@ auto main(int argc, char *argv[]) -> int {
     return 1;
   }
 
-  Interface interface;
-  interface.run();
+  // Interface interface;
+  // interface.run();
+
+  Registers regs;
+  regs.reset();
+
+  regs.set8(kRegA, 0b110001);
+  regs.flags.set(kFlagZ, 0);
+  regs.flags.set(kFlagN, 1);
+  regs.flags.set(kFlagH, 1);
+  regs.flags.set(kFlagC, 1);
+
+  spdlog::info("flag z: {}", regs.flags.get(kFlagZ));
+  spdlog::info("flag n: {}", regs.flags.get(kFlagN));
+  spdlog::info("flag h: {}", regs.flags.get(kFlagH));
+  spdlog::info("flag c: {}", regs.flags.get(kFlagC));
+  spdlog::info("af: {:016b}", regs.get16(kRegAF));
+  spdlog::info("af: {:08b}|{:08b}", regs.get8(kRegA), regs.get8(kRegF));
 
   spdlog::info("Exiting.");
 

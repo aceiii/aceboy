@@ -4,6 +4,10 @@
 
 #include <memory>
 
+struct State {
+  bool ime;
+};
+
 class CPU {
 public:
   void execute();
@@ -13,4 +17,5 @@ public:
 
 public:
   Registers regs;
+  State state;
 };
