@@ -2,13 +2,12 @@
 
 #include "instructions.h"
 #include "registers.h"
-#include <expected>
+#include "opcodes.h"
 
-using decode_result = std::expected<Instruction, std::string>;
+#include <expected>
+#include <string>
 
 class Decoder {
 public:
-  Decode(const uint8_t* memory, const Registers* registers);
-
-  decode_result decode();
+  Instruction decode(uint8_t *memory);
 };

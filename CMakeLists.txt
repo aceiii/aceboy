@@ -15,6 +15,7 @@ set(SOURCE_FILES
     src/interface.cpp
     src/cpu.cpp
     src/emulator.cpp
+    src/decoder.cpp
 )
 
 set(ARGPARSE_BUILD_TESTS OFF)
