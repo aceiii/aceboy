@@ -1,6 +1,7 @@
 #include "decoder.h"
 #include "instructions.h"
 #include "opcodes.h"
+#include "registers.h"
 
 #include <optional>
 #include <unordered_map>
@@ -144,6 +145,139 @@ Instruction Decoder::decode(uint8_t* memory) {
     case 0x7D: return { Opcode::LD, 1, 4, Operands { { Reg8::A, true }, { Reg8::L, true } } };
     case 0x7E: return { Opcode::LD, 1, 8, Operands { { Reg8::A, true }, { Reg16::HL, false } } };
     case 0x7F: return { Opcode::LD, 1, 4, Operands { { Reg8::A, true }, { Reg8::A, true } } };
+    case 0x80: return { Opcode::ADD, 1, 4, Operands { { Reg8::A, true }, { Reg8::B, true } } };
+    case 0x81: return { Opcode::ADD, 1, 4, Operands { { Reg8::A, true }, { Reg8::C, true } } };
+    case 0x82: return { Opcode::ADD, 1, 4, Operands { { Reg8::A, true }, { Reg8::D, true } } };
+    case 0x83: return { Opcode::ADD, 1, 4, Operands { { Reg8::A, true }, { Reg8::E, true } } };
+    case 0x84: return { Opcode::ADD, 1, 4, Operands { { Reg8::A, true }, { Reg8::H, true } } };
+    case 0x85: return { Opcode::ADD, 1, 4, Operands { { Reg8::A, true }, { Reg8::L, true } } };
+    case 0x86: return { Opcode::ADD, 1, 8, Operands { { Reg8::A, true }, { Reg16::HL, false } } };
+    case 0x87: return { Opcode::ADD, 1, 4, Operands { { Reg8::A, true }, { Reg8::A, true } } };
+    case 0x88: return { Opcode::ADC, 1, 4, Operands { { Reg8::A, true }, { Reg8::B, true } } };
+    case 0x89: return { Opcode::ADC, 1, 4, Operands { { Reg8::A, true }, { Reg8::C, true } } };
+    case 0x8A: return { Opcode::ADC, 1, 4, Operands { { Reg8::A, true }, { Reg8::D, true } } };
+    case 0x8B: return { Opcode::ADC, 1, 4, Operands { { Reg8::A, true }, { Reg8::E, true } } };
+    case 0x8C: return { Opcode::ADC, 1, 4, Operands { { Reg8::A, true }, { Reg8::H, true } } };
+    case 0x8D: return { Opcode::ADC, 1, 4, Operands { { Reg8::A, true }, { Reg8::L, true } } };
+    case 0x8E: return { Opcode::ADC, 1, 8, Operands { { Reg8::A, true }, { Reg16::HL, false } } };
+    case 0x8F: return { Opcode::ADC, 1, 4, Operands { { Reg8::A, true }, { Reg8::A, true } } };
+    case 0x90: return { Opcode::SUB, 1, 4, Operands { { Reg8::A, true }, { Reg8::B, true } } };
+    case 0x91: return { Opcode::SUB, 1, 4, Operands { { Reg8::A, true }, { Reg8::C, true } } };
+    case 0x92: return { Opcode::SUB, 1, 4, Operands { { Reg8::A, true }, { Reg8::D, true } } };
+    case 0x93: return { Opcode::SUB, 1, 4, Operands { { Reg8::A, true }, { Reg8::E, true } } };
+    case 0x94: return { Opcode::SUB, 1, 4, Operands { { Reg8::A, true }, { Reg8::H, true } } };
+    case 0x95: return { Opcode::SUB, 1, 4, Operands { { Reg8::A, true }, { Reg8::L, true } } };
+    case 0x96: return { Opcode::SUB, 1, 8, Operands { { Reg8::A, true }, { Reg16::HL, false } } };
+    case 0x97: return { Opcode::SUB, 1, 4, Operands { { Reg8::A, true }, { Reg8::A, true } } };
+    case 0x98: return { Opcode::SBC, 1, 4, Operands { { Reg8::A, true }, { Reg8::B, true } } };
+    case 0x99: return { Opcode::SBC, 1, 4, Operands { { Reg8::A, true }, { Reg8::C, true } } };
+    case 0x9A: return { Opcode::SBC, 1, 4, Operands { { Reg8::A, true }, { Reg8::D, true } } };
+    case 0x9B: return { Opcode::SBC, 1, 4, Operands { { Reg8::A, true }, { Reg8::E, true } } };
+    case 0x9C: return { Opcode::SBC, 1, 4, Operands { { Reg8::A, true }, { Reg8::H, true } } };
+    case 0x9D: return { Opcode::SBC, 1, 4, Operands { { Reg8::A, true }, { Reg8::L, true } } };
+    case 0x9E: return { Opcode::SBC, 1,8, Operands { { Reg8::A, true }, { Reg16::HL, false } } };
+    case 0x9F: return { Opcode::SBC, 1, 4, Operands { { Reg8::A, true }, { Reg8::A, true } } };
+    case 0xA0: return { Opcode::AND, 1, 4, Operands { { Reg8::A, true }, { Reg8::B, true } } };
+    case 0xA1: return { Opcode::AND, 1, 4, Operands { { Reg8::A, true }, { Reg8::C, true } } };
+    case 0xA2: return { Opcode::AND, 1, 4, Operands { { Reg8::A, true }, { Reg8::D, true } } };
+    case 0xA3: return { Opcode::AND, 1, 4, Operands { { Reg8::A, true }, { Reg8::E, true } } };
+    case 0xA4: return { Opcode::AND, 1, 4, Operands { { Reg8::A, true }, { Reg8::H, true } }};
+    case 0xA5: return { Opcode::AND, 1, 4, Operands { { Reg8::A, true }, { Reg8::L, true } } };
+    case 0xA6: return { Opcode::AND, 1, 8, Operands { { Reg8::A, true }, { Reg16::HL, false } } };
+    case 0xA7: return { Opcode::AND, 1, 4, Operands { { Reg8::A, true }, { Reg8::A, true } } };
+    case 0xA8: return { Opcode::XOR, 1, 4, Operands { { Reg8::A, true }, { Reg8::B, true } } };
+    case 0xA9: return { Opcode::XOR, 1, 4, Operands { { Reg8::A, true }, { Reg8::C, true } } };
+    case 0xAA: return { Opcode::XOR, 1, 4, Operands { { Reg8::A, true }, { Reg8::D, true } } };
+    case 0xAB: return { Opcode::XOR, 1, 4, Operands { { Reg8::A, true }, { Reg8::E, true } } };
+    case 0xAC: return { Opcode::XOR, 1, 4, Operands { { Reg8::A, true }, { Reg8::H, true } } };
+    case 0xAD: return { Opcode::XOR, 1, 4, Operands { { Reg8::A, true }, { Reg8::L, true } } };
+    case 0xAE: return { Opcode::XOR, 1, 8, Operands { { Reg8::A, true }, { Reg16::HL, false } } };
+    case 0xAF: return { Opcode::XOR, 1, 4, Operands { { Reg8::A, true }, { Reg8::A, true } } };
+    case 0xB0: return { Opcode::XOR, 1, 4, Operands { { Reg8::A, true }, { Reg8::B, true } } };
+    case 0xB1: return { Opcode::OR, 1, 4, Operands { { Reg8::A, true }, { Reg8::C, true } } };
+    case 0xB2: return { Opcode::OR, 1, 4, Operands { { Reg8::A, true }, { Reg8::D, true } } };
+    case 0xB3: return { Opcode::OR, 1, 4, Operands { { Reg8::A, true }, { Reg8::E, true } } };
+    case 0xB4: return { Opcode::OR, 1, 4, Operands { { Reg8::A, true }, { Reg8::H, true } } };
+    case 0xB5: return { Opcode::OR, 1, 4, Operands { { Reg8::A, true }, { Reg8::L, true } } };
+    case 0xB6: return { Opcode::OR, 1, 8, Operands { { Reg8::A, true }, { Reg16::HL, false } } };
+    case 0xB7: return { Opcode::OR, 1, 4, Operands { { Reg8::A, true }, { Reg8::A, true } } };
+    case 0xB8: return { Opcode::CP, 1, 4, Operands { { Reg8::A, true }, { Reg8::B, true } } };
+    case 0xB9: return { Opcode::CP, 1, 4, Operands { { Reg8::A, true }, { Reg8::C, true } } };
+    case 0xBA: return { Opcode::CP, 1, 4, Operands { { Reg8::A, true }, { Reg8::D, true } } };
+    case 0xBB: return { Opcode::CP, 1, 4, Operands { { Reg8::A, true }, { Reg8::E, true } } };
+    case 0xBC: return { Opcode::CP, 1, 4, Operands { { Reg8::A, true }, { Reg8::H, true } } };
+    case 0xBD: return { Opcode::CP, 1, 4, Operands { { Reg8::A, true }, { Reg8::L, true } } };
+    case 0xBE: return { Opcode::CP, 1, 8, Operands { { Reg8::A, true }, { Reg16::HL, false } } };
+    case 0xBF: return { Opcode::CP, 1, 4, Operands { { Reg8::A, true }, { Reg8::A, true } } };
+    case 0xC0: return { Opcode::RET, 1, { 20, 8 }, Operands { { Cond::NZ, true } } };
+    case 0xC1: return { Opcode::POP, 1, 12, Operands { { Reg16::BC, true } } };
+    case 0xC2: return { Opcode::JP, 3, { 16, 12 }, Operands { { Cond::NZ, true }, { Immediate16 { n16 }, false } } };
+    case 0xC3: return { Opcode::JP, 3, 16, Operands { { Immediate16 { n16 }, false } } };
+    case 0xC4: return { Opcode::CALL, 3, { 24, 12 }, Operands { { Cond::NZ, true }, { Immediate16 { n16 }, false } } };
+    case 0xC5: return { Opcode::PUSH, 1, 16, Operands { { Reg16::BC, true } } };
+    case 0xC6: return { Opcode::ADD, 2, 8, Operands { { Reg8::A, true }, { Immediate8 { n8 }, true } } };
+    case 0xC7: return { Opcode::RST, 1, 16, Operands { { Immediate8 { 0x00 }, true } } };
+    case 0xC8: return { Opcode::RET, 1, { 20, 8 }, Operands { { Cond::Z, true } } };
+    case 0xC9: return { Opcode::RET, 1, 16, std::nullopt };
+    case 0xCA: return { Opcode::JP, 3, { 16, 12 }, Operands { { Cond::Z, true }, { Immediate16 { n16 }, false } } };
+    case 0xCB: prefixed = true; break;
+    case 0xCC: return { Opcode::CALL, 3, { 24, 12 }, Operands { { Cond::Z, true }, { Immediate16 { n16 }, false } } };
+    case 0xCD: return { Opcode::CALL, 3, 24, Operands { { Immediate16 { n16 }, false } } };
+    case 0xCE: return { Opcode::ADC, 2, 8, Operands { { Reg8::A, true }, { Immediate8 { n8 }, true } } };
+    case 0xCF: return { Opcode::RST, 1, 16, Operands { { Immediate8 { 0x08 }, true } } };
+    case 0xD0: return { Opcode::RET, 1, { 20, 8 }, Operands { { Cond::NC, true } } };
+    case 0xD1: return { Opcode::POP, 1, 12, Operands { { Reg16::DE, true } } };
+    case 0xD2: return { Opcode::JP, 3, { 16, 12 }, Operands { { Cond::NC, true }, { Immediate16 { n16 }, false } } };
+    case 0xD3: return { Opcode::Invalid, 1, 4, std::nullopt };
+    case 0xD4: return { Opcode::CALL, 3, { 24, 12 }, Operands { { Cond::NC, true }, { Immediate16 { n16 }, false } } };
+    case 0xD5: return { Opcode::PUSH, 1, 16, Operands { { Reg16::DE, true } } };
+    case 0xD6: return { Opcode::ADC, 2, 8, Operands { { Reg8::A, true }, { Immediate8 { n8 }, true } } };
+    case 0xD7: return { Opcode::RST, 1, 16, Operands { { Immediate8 { 0x10 }, true } } };
+    case 0xD8: return { Opcode::RET, 1, { 20, 8 }, Operands { { Cond::C, true } } };
+    case 0xD9: return { Opcode::RETI, 1, 16, std::nullopt };
+    case 0xDA: return { Opcode::JP, 3, { 16, 12 }, Operands { { Cond::C, true }, { Immediate16 { n16 }, false } } };
+    case 0xDB: return { Opcode::Invalid, 1, 4, std::nullopt };
+    case 0xDC: return { Opcode::CALL, 3, { 24, 12 }, Operands { { Cond::C, true }, { Immediate16 { n16 }, false } } };
+    case 0xDD: return { Opcode::Invalid, 1, 4, std::nullopt };
+    case 0xDE: return { Opcode::SBC, 2, 8, Operands { { Reg8::A, true }, { Immediate8 { n8 }, true } } };
+    case 0xDF: return { Opcode::RST, 1, 16, Operands { { Immediate8 { 0x18 }, true } } };
+    case 0xE0: return { Opcode::LDH, 2, 12, Operands { { Immediate8 { n8 }, false }, { Reg8::A, true } } };
+    case 0xE1: return { Opcode::POP, 1, 12, Operands { { Reg16::HL, true } } };
+    case 0xE2: return { Opcode::LD, 1, 8, Operands { { Reg8::C, false },  { Reg8::A, true } } };
+    case 0xE3: return { Opcode::Invalid, 1, 4, std::nullopt };
+    case 0xE4: return { Opcode::Invalid, 1, 4, std::nullopt };
+    case 0xE5: return { Opcode::PUSH, 1, 16, Operands { { Reg16::HL, true } } };
+    case 0xE6: return { Opcode::AND, 2, 8, Operands { { Reg8::A, true }, { Immediate8 { n8 }, true } } };
+    case 0xE7: return { Opcode::RST, 1, 16, Operands { { Immediate8 { 0x20 }, true } } };
+    case 0xE8: return { Opcode::ADD, 2, 16, Operands { { StackPointer {}, true }, { ImmediateS8 { e8 }, true } } };
+    case 0xE9: return { Opcode::JP, 1, 4, Operands { { Reg16::HL, true } } };
+    case 0xEA: return { Opcode::LD, 3, 16, Operands { { Immediate16 { n16 }, false }, { Reg8::A, true } } };
+    case 0xEB: return { Opcode::Invalid, 1, 4, std::nullopt };
+    case 0xEC: return { Opcode::Invalid, 1, 4, std::nullopt };
+    case 0xED: return { Opcode::Invalid, 1, 4, std::nullopt };
+    case 0xEE: return { Opcode::XOR, 2, 8, Operands { { Reg8::A, true }, { Immediate8 { n8 }, true } } };
+    case 0xEF: return { Opcode::RST, 1, 16, Operands { { Immediate8 { 0x28 }, true } } };
+    case 0xF0: return { Opcode::LDH, 2, 12, Operands { { Reg8::A, true }, { Immediate8 { n8 }, false } } };
+    case 0xF1: return { Opcode::POP, 1, 12, Operands { { Reg16::AF, true } } };
+    case 0xF2: return { Opcode::LD, 1, 8, Operands { { Reg8::A, true }, { Reg8::C, false } } };
+    case 0xF3: return { Opcode::DI, 1, 4, std::nullopt };
+    case 0xF4: return { Opcode::Invalid, 1, 4, std::nullopt };
+    case 0xF5: return { Opcode::PUSH, 1, 16, Operands { { Reg16::AF, true } } };
+    case 0xF6: return { Opcode::OR, 2, 8, Operands { { Reg8::A, true }, { Immediate8 { n8 }, true } } };
+    case 0xF7: return { Opcode::RST, 1, 16, Operands { { Immediate8 { 0x30 }, true } } };
+    case 0xF8: return { Opcode::LD, 2, 12, Operands { { Reg16::HL, true }, { StackPointer {}, true, e8 } } };
+    case 0xF9: return { Opcode::LD, 1, 8, Operands { { StackPointer {}, true }, { Reg16::HL, true } } };
+    case 0xFA: return { Opcode::LD, 3, 16, Operands { { Reg8::A, true }, { Immediate16 { n16 }, false } } };
+    case 0xFB: return { Opcode::EI, 1, 4, std::nullopt };
+    case 0xFC: return { Opcode::Invalid, 1, 4, std::nullopt };
+    case 0xFD: return { Opcode::Invalid, 1, 4, std::nullopt };
+    case 0xFE: return { Opcode::CP, 2, 8, Operands { { Reg8::A, true }, { Immediate8 { n8 }, true } } };
+    case 0xFF: return { Opcode::RST, 1, 16, Operands { { Immediate16 { 0x38 }, true } } };
   }
+
+  if (!prefixed) {
+  return { Opcode::Invalid, 1, 4, std::nullopt };
+  }
+
   return { Opcode::Invalid, 1, 4, std::nullopt };
 }

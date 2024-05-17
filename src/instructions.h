@@ -28,30 +28,19 @@ struct Immediate16 {
   uint16_t value;
 };
 
-struct Offset8 {
-  int8_t value;
-};
-
 struct StackPointer {};
-
-struct AddressReg16 {
-  Reg16 reg;
-};
-
-struct AddressImm16 {
-  uint16_t address;
-};
 
 struct Operand {
   using OpType = std::variant<Reg8, Reg16, Cond, Immediate8, Immediate16, ImmediateS8, StackPointer>;
 
   OpType op;
   bool immediate;
-  int offset;
+  int8_t offset;
 
   Operand(OpType&& o): op{o}, immediate{true}, offset{0} {}
   Operand(OpType&& o, bool imm): op{o}, immediate{imm}, offset{0} {}
-  Operand(OpType&& o, bool imm, bool incdec): op{o}, immediate{imm}, offset{incdec ? 1 : -1} {}
+  Operand(OpType&& o, bool imm, bool incdec): op{o}, immediate{imm}, offset{static_cast<int8_t>(incdec ? 1 : -1)} {}
+  Operand(OpType&& o, bool imm, int8_t off): op{o}, immediate{imm}, offset{off} {}
 };
 
 // struct OneOperand {
