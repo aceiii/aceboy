@@ -3,8 +3,71 @@
 #include "opcodes.h"
 #include "registers.h"
 
+#include <magic_enum.hpp>
 #include <optional>
 #include <unordered_map>
+#include <utility>
+
+static Instruction decode_prefixed(uint8_t* memory) {
+  uint8_t op = *memory;
+
+  int r8 = op & 0x7;
+  Operand operand = ([=] () {
+    switch (r8) {
+    case 0: return Operand { Reg8::B, true };
+    case 1: return Operand { Reg8::C, true };
+    case 2: return Operand { Reg8::D, true };
+    case 3: return Operand { Reg8::E, true };
+    case 4: return Operand { Reg8::H, true };
+    case 5: return Operand { Reg8::L, true };
+    case 6: return Operand { Reg16::HL, false };
+    case 7: return Operand { Reg8::A, true };
+    default:
+      std::unreachable();
+    }
+  })();
+
+  size_t bytes = 2;
+  CycleCount cycles = 8;
+
+  if (r8 == 6) {
+    cycles = 16;
+  }
+
+  if (op & 0xC0) {
+    uint8_t b3 = (op & 0x38) >> 3;
+    Operand bit_operand = { Immediate8 { b3 }, true };
+
+    switch ((op & 0xC0) >> 6)
+    {
+    case 1: {
+      if (r8 == 6) {
+        cycles = 12;
+      }
+      return { Opcode::BIT, bytes, cycles, Operands { bit_operand, operand } };
+    }
+    case 2: return { Opcode::RES, bytes, cycles, Operands { bit_operand, operand } };
+    case 3: return { Opcode::SET, bytes, cycles, Operands { bit_operand, operand } };
+    default: std::unreachable();
+    }
+
+  } else {
+    switch ((op & 0xF8) >> 3) {
+    case 0: return { Opcode::RLC, bytes, cycles, Operands { operand } };
+    case 1: return { Opcode::RRC, bytes, cycles, Operands { operand } };
+    case 2: return { Opcode::RL, bytes, cycles, Operands { operand } };
+    case 3: return { Opcode::RR, bytes, cycles, Operands { operand } };
+    case 4: return { Opcode::SLA, bytes, cycles, Operands { operand } };
+    case 5: return { Opcode::SRA, bytes, cycles, Operands { operand } };
+    case 6: return { Opcode::SWAP, bytes, cycles, Operands { operand } };
+    case 7: return { Opcode::SRL, bytes, cycles, Operands { operand } };
+    default:
+        std::unreachable();
+    }
+  }
+
+  return { Opcode::Invalid, 1, 4, std::nullopt };
+}
 
 Instruction Decoder::decode(uint8_t* memory) {
   uint8_t op = *memory;
@@ -12,8 +75,6 @@ Instruction Decoder::decode(uint8_t* memory) {
   uint8_t hi = *(memory + 2);
   uint16_t n16 = (hi << 8) | n8;
   int8_t e8 = static_cast<int8_t>(n8);
-
-  bool prefixed = false;
 
   switch (op)
   {
@@ -220,7 +281,7 @@ Instruction Decoder::decode(uint8_t* memory) {
     case 0xC8: return { Opcode::RET, 1, { 20, 8 }, Operands { { Cond::Z, true } } };
     case 0xC9: return { Opcode::RET, 1, 16, std::nullopt };
     case 0xCA: return { Opcode::JP, 3, { 16, 12 }, Operands { { Cond::Z, true }, { Immediate16 { n16 }, false } } };
-    case 0xCB: prefixed = true; break;
+    case 0xCB: return decode_prefixed(memory + 1);
     case 0xCC: return { Opcode::CALL, 3, { 24, 12 }, Operands { { Cond::Z, true }, { Immediate16 { n16 }, false } } };
     case 0xCD: return { Opcode::CALL, 3, 24, Operands { { Immediate16 { n16 }, false } } };
     case 0xCE: return { Opcode::ADC, 2, 8, Operands { { Reg8::A, true }, { Immediate8 { n8 }, true } } };
@@ -273,10 +334,6 @@ Instruction Decoder::decode(uint8_t* memory) {
     case 0xFD: return { Opcode::Invalid, 1, 4, std::nullopt };
     case 0xFE: return { Opcode::CP, 2, 8, Operands { { Reg8::A, true }, { Immediate8 { n8 }, true } } };
     case 0xFF: return { Opcode::RST, 1, 16, Operands { { Immediate16 { 0x38 }, true } } };
-  }
-
-  if (!prefixed) {
-  return { Opcode::Invalid, 1, 4, std::nullopt };
   }
 
   return { Opcode::Invalid, 1, 4, std::nullopt };

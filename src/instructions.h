@@ -37,33 +37,18 @@ struct Operand {
   bool immediate;
   int8_t offset;
 
-  Operand(OpType&& o): op{o}, immediate{true}, offset{0} {}
-  Operand(OpType&& o, bool imm): op{o}, immediate{imm}, offset{0} {}
-  Operand(OpType&& o, bool imm, bool incdec): op{o}, immediate{imm}, offset{static_cast<int8_t>(incdec ? 1 : -1)} {}
-  Operand(OpType&& o, bool imm, int8_t off): op{o}, immediate{imm}, offset{off} {}
+  Operand(OpType o): op{o}, immediate{true}, offset{0} {}
+  Operand(OpType o, bool imm): op{o}, immediate{imm}, offset{0} {}
+  Operand(OpType o, bool imm, bool incdec): op{o}, immediate{imm}, offset{static_cast<int8_t>(incdec ? 1 : -1)} {}
+  Operand(OpType o, bool imm, int8_t off): op{o}, immediate{imm}, offset{off} {}
 };
-
-// struct OneOperand {
-//   Operand src;
-
-//   OneOperand(Operand&& s): src(src)
-// };
-
-// struct TwoOperands {
-//   Operand dest;
-//   Operand src;
-
-//   TwoOperands(Operand&& d, Operand&& s): dest{d}, src{s} {}
-// };
-
-// using Operands = std::variant<None, OneOperand, TwoOperands>;
 
 struct Operands {
   Operand dst;
   std::optional<Operand> src;
 
-  Operands(Operand&& d): dst{d}, src{std::nullopt} {}
-  Operands(Operand&& d, Operand&& s): dst{d}, src{s} {}
+  Operands(Operand d): dst{d}, src{std::nullopt} {}
+  Operands(Operand d, Operand s): dst{d}, src{s} {}
 };
 
 struct CycleCount {
