@@ -15,6 +15,10 @@ struct Memory {
     return bytes[address];
   }
 
+  uint8_t& at(uint8_t address) {
+    return bytes[address];
+  }
+
   void set16(uint16_t address, uint16_t val) {
     bytes[address] = val >> 8;
     bytes[address + 1] = val & 0xff;

@@ -7,7 +7,9 @@
 #include <expected>
 #include <string>
 
+class Memory;
+
 class Decoder {
 public:
-  Instruction decode(uint8_t *memory);
+  Instruction decode(Memory *memory, uint8_t addr);
 };

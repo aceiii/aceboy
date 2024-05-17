@@ -2,14 +2,15 @@
 #include "instructions.h"
 #include "opcodes.h"
 #include "registers.h"
+#include "memory.h"
 
 #include <magic_enum.hpp>
 #include <optional>
 #include <unordered_map>
 #include <utility>
 
-static Instruction decode_prefixed(uint8_t* memory) {
-  uint8_t op = *memory;
+static Instruction decode_prefixed(Memory *memory, uint8_t addr) {
+  uint8_t op = memory->get8(addr);
 
   int r8 = op & 0x7;
   Operand operand = ([=] () {
@@ -69,15 +70,14 @@ static Instruction decode_prefixed(uint8_t* memory) {
   return { Opcode::Invalid, 1, 4, std::nullopt };
 }
 
-Instruction Decoder::decode(uint8_t* memory) {
-  uint8_t op = *memory;
-  uint8_t n8 = *(memory + 1);
-  uint8_t hi = *(memory + 2);
+Instruction Decoder::decode(Memory *memory, uint8_t addr) {
+  uint8_t op = memory->get8(addr);
+  uint8_t n8 = memory->get8(addr + 1);
+  uint8_t hi = memory->get8(addr + 2);
   uint16_t n16 = (hi << 8) | n8;
   int8_t e8 = static_cast<int8_t>(n8);
 
-  switch (op)
-  {
+  switch (op) {
     case 0x00: return { Opcode::NOP, 1, 4, std::nullopt };
     case 0x01: return { Opcode::LD, 3, 12, Operands { { Reg8::A, true }, { Immediate16 { n16 }, true } } };
     case 0x02: return { Opcode::LD, 1, 8, Operands { { Reg16::BC, false }, { Reg8::A, true } } };
@@ -281,7 +281,7 @@ Instruction Decoder::decode(uint8_t* memory) {
     case 0xC8: return { Opcode::RET, 1, { 20, 8 }, Operands { { Cond::Z, true } } };
     case 0xC9: return { Opcode::RET, 1, 16, std::nullopt };
     case 0xCA: return { Opcode::JP, 3, { 16, 12 }, Operands { { Cond::Z, true }, { Immediate16 { n16 }, false } } };
-    case 0xCB: return decode_prefixed(memory + 1);
+    case 0xCB: return decode_prefixed(memory, addr + 1);
     case 0xCC: return { Opcode::CALL, 3, { 24, 12 }, Operands { { Cond::Z, true }, { Immediate16 { n16 }, false } } };
     case 0xCD: return { Opcode::CALL, 3, 24, Operands { { Immediate16 { n16 }, false } } };
     case 0xCE: return { Opcode::ADC, 2, 8, Operands { { Reg8::A, true }, { Immediate8 { n8 }, true } } };
@@ -289,7 +289,6 @@ Instruction Decoder::decode(uint8_t* memory) {
     case 0xD0: return { Opcode::RET, 1, { 20, 8 }, Operands { { Cond::NC, true } } };
     case 0xD1: return { Opcode::POP, 1, 12, Operands { { Reg16::DE, true } } };
     case 0xD2: return { Opcode::JP, 3, { 16, 12 }, Operands { { Cond::NC, true }, { Immediate16 { n16 }, false } } };
-    case 0xD3: return { Opcode::Invalid, 1, 4, std::nullopt };
     case 0xD4: return { Opcode::CALL, 3, { 24, 12 }, Operands { { Cond::NC, true }, { Immediate16 { n16 }, false } } };
     case 0xD5: return { Opcode::PUSH, 1, 16, Operands { { Reg16::DE, true } } };
     case 0xD6: return { Opcode::ADC, 2, 8, Operands { { Reg8::A, true }, { Immediate8 { n8 }, true } } };
@@ -297,32 +296,24 @@ Instruction Decoder::decode(uint8_t* memory) {
     case 0xD8: return { Opcode::RET, 1, { 20, 8 }, Operands { { Cond::C, true } } };
     case 0xD9: return { Opcode::RETI, 1, 16, std::nullopt };
     case 0xDA: return { Opcode::JP, 3, { 16, 12 }, Operands { { Cond::C, true }, { Immediate16 { n16 }, false } } };
-    case 0xDB: return { Opcode::Invalid, 1, 4, std::nullopt };
     case 0xDC: return { Opcode::CALL, 3, { 24, 12 }, Operands { { Cond::C, true }, { Immediate16 { n16 }, false } } };
-    case 0xDD: return { Opcode::Invalid, 1, 4, std::nullopt };
     case 0xDE: return { Opcode::SBC, 2, 8, Operands { { Reg8::A, true }, { Immediate8 { n8 }, true } } };
     case 0xDF: return { Opcode::RST, 1, 16, Operands { { Immediate8 { 0x18 }, true } } };
     case 0xE0: return { Opcode::LDH, 2, 12, Operands { { Immediate8 { n8 }, false }, { Reg8::A, true } } };
     case 0xE1: return { Opcode::POP, 1, 12, Operands { { Reg16::HL, true } } };
     case 0xE2: return { Opcode::LD, 1, 8, Operands { { Reg8::C, false },  { Reg8::A, true } } };
-    case 0xE3: return { Opcode::Invalid, 1, 4, std::nullopt };
-    case 0xE4: return { Opcode::Invalid, 1, 4, std::nullopt };
     case 0xE5: return { Opcode::PUSH, 1, 16, Operands { { Reg16::HL, true } } };
     case 0xE6: return { Opcode::AND, 2, 8, Operands { { Reg8::A, true }, { Immediate8 { n8 }, true } } };
     case 0xE7: return { Opcode::RST, 1, 16, Operands { { Immediate8 { 0x20 }, true } } };
     case 0xE8: return { Opcode::ADD, 2, 16, Operands { { StackPointer {}, true }, { ImmediateS8 { e8 }, true } } };
     case 0xE9: return { Opcode::JP, 1, 4, Operands { { Reg16::HL, true } } };
     case 0xEA: return { Opcode::LD, 3, 16, Operands { { Immediate16 { n16 }, false }, { Reg8::A, true } } };
-    case 0xEB: return { Opcode::Invalid, 1, 4, std::nullopt };
-    case 0xEC: return { Opcode::Invalid, 1, 4, std::nullopt };
-    case 0xED: return { Opcode::Invalid, 1, 4, std::nullopt };
     case 0xEE: return { Opcode::XOR, 2, 8, Operands { { Reg8::A, true }, { Immediate8 { n8 }, true } } };
     case 0xEF: return { Opcode::RST, 1, 16, Operands { { Immediate8 { 0x28 }, true } } };
     case 0xF0: return { Opcode::LDH, 2, 12, Operands { { Reg8::A, true }, { Immediate8 { n8 }, false } } };
     case 0xF1: return { Opcode::POP, 1, 12, Operands { { Reg16::AF, true } } };
     case 0xF2: return { Opcode::LD, 1, 8, Operands { { Reg8::A, true }, { Reg8::C, false } } };
     case 0xF3: return { Opcode::DI, 1, 4, std::nullopt };
-    case 0xF4: return { Opcode::Invalid, 1, 4, std::nullopt };
     case 0xF5: return { Opcode::PUSH, 1, 16, Operands { { Reg16::AF, true } } };
     case 0xF6: return { Opcode::OR, 2, 8, Operands { { Reg8::A, true }, { Immediate8 { n8 }, true } } };
     case 0xF7: return { Opcode::RST, 1, 16, Operands { { Immediate8 { 0x30 }, true } } };
@@ -330,8 +321,6 @@ Instruction Decoder::decode(uint8_t* memory) {
     case 0xF9: return { Opcode::LD, 1, 8, Operands { { StackPointer {}, true }, { Reg16::HL, true } } };
     case 0xFA: return { Opcode::LD, 3, 16, Operands { { Reg8::A, true }, { Immediate16 { n16 }, false } } };
     case 0xFB: return { Opcode::EI, 1, 4, std::nullopt };
-    case 0xFC: return { Opcode::Invalid, 1, 4, std::nullopt };
-    case 0xFD: return { Opcode::Invalid, 1, 4, std::nullopt };
     case 0xFE: return { Opcode::CP, 2, 8, Operands { { Reg8::A, true }, { Immediate8 { n8 }, true } } };
     case 0xFF: return { Opcode::RST, 1, 16, Operands { { Immediate16 { 0x38 }, true } } };
   }

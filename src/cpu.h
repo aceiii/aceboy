@@ -1,6 +1,8 @@
 #pragma once
 
+#include "decoder.h"
 #include "registers.h"
+#include "memory.h"
 
 #include <memory>
 
@@ -15,9 +17,9 @@ public:
   void execute();
   void run();
 
-  Registers* registers();
-
 public:
+  Memory memory;
   Registers regs;
   State state;
+  Decoder decoder;
 };

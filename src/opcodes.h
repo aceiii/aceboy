@@ -25,7 +25,6 @@ enum class Opcode {
   JR,
   HALT,
   LDH,
-  LDI,
   POP,
   PUSH,
   RST,
