@@ -6,6 +6,7 @@
 #include <array>
 #include <variant>
 #include <optional>
+#include <string_view>
 
 enum class Cond {
   NZ = 0,
